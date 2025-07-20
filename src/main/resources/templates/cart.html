@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Giỏ hàng của bạn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+            text-align: right;
+        }
+
+        .btn {
+            padding: 6px 10px;
+            cursor: pointer;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+        }
+
+        .btn-remove {
+            background-color: #f44336;
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .qty-btn {
+            padding: 4px 8px;
+            font-size: 14px;
+            background-color: #ddd;
+            color: black;
+            border: 1px solid #aaa;
+            cursor: pointer;
+        }
+
+        .qty-input {
+            width: 50px;
+            text-align: center;
+            font-size: 14px;
+            padding: 4px;
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.2);
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+    </style>
+</head>
+<body>
+
+<h2>🛒 Giỏ hàng của bạn</h2>
+
+<table id="cart-table">
+    <thead>
+    <tr>
+        <th></th>
+        <th>Sản phẩm</th>
+        <th>Giá</th>
+        <th>Số lượng</th>
+        <th>Tổng</th>
+        <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Render bằng JS -->
+    </tbody>
+</table>
+
+<div class="total" id="total-price">Tổng cộng: 0₫</div>
+
+<button class="btn" onclick="checkout()">🧾 Thanh toán</button>
+
+<script>
+    const cartItems = [
+        { id: 1, name: 'Cà phê sữa đá', price: 25000, quantity: 2, selected: true },
+        { id: 2, name: 'Trà đào cam sả', price: 30000, quantity: 1, selected: true },
+        { id: 3, name: 'Bánh mì thịt nướng', price: 20000, quantity: 1, selected: true }
+    ];
+
+    function renderCart() {
+        const tbody = document.querySelector("#cart-table tbody");
+        tbody.innerHTML = "";
+        let total = 0;
+
+        cartItems.forEach(item => {
+            const itemTotal = item.price * item.quantity;
+            if (item.selected) total += itemTotal;
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+          <td>
+            <input type="checkbox" ${item.selected ? 'checked' : ''} onchange="toggleSelect(${item.id})">
+          </td>
+          <td>${item.name}</td>
+          <td>${item.price.toLocaleString()}₫</td>
+          <td>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+              <input type="number" class="qty-input" value="${item.quantity}" min="1"
+                onchange="updateQuantity(${item.id}, this.value)">
+              <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+            </div>
+          </td>
+          <td>${itemTotal.toLocaleString()}₫</td>
+          <td>
+            <button class="btn btn-remove" onclick="removeItem(${item.id})">Xoá</button>
+          </td>
+        `;
+            tbody.appendChild(row);
+        });
+
+        document.getElementById("total-price").innerText = `Tổng cộng: ${total.toLocaleString()}₫`;
+    }
+
+    function changeQty(id, delta) {
+        const item = cartItems.find(i => i.id === id);
+        if (item) {
+            item.quantity = Math.max(1, item.quantity + delta);
+            renderCart();
+        }
+    }
+
+    function updateQuantity(id, newQty) {
+        const item = cartItems.find(i => i.id === id);
+        const qty = parseInt(newQty);
+        if (item && !isNaN(qty) && qty > 0) {
+            item.quantity = qty;
+            renderCart();
+        }
+    }
+
+    function toggleSelect(id) {
+        const item = cartItems.find(i => i.id === id);
+        if (item) {
+            item.selected = !item.selected;
+            renderCart();
+        }
+    }
+
+    function removeItem(id) {
+        const index = cartItems.findIndex(i => i.id === id);
+        if (index !== -1) {
+            cartItems.splice(index, 1);
+            renderCart();
+        }
+    }
+
+    function checkout() {
+        const selectedItems = cartItems.filter(i => i.selected);
+        if (selectedItems.length === 0) {
+            alert("Vui lòng chọn ít nhất 1 sản phẩm để thanh toán.");
+            return;
+        }
+
+        console.log("Thanh toán với:", selectedItems);
+        alert(`Đã thanh toán ${selectedItems.length} sản phẩm!`);
+        // Gọi API POST /cart/checkout
+    }
+
+    renderCart();
+</script>
+
+</body>
+</html>
