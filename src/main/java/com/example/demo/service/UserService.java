@@ -6,9 +6,9 @@ import org.springframework.security.crypto.password.PasswordEncoder; // <--- ADD
 import org.springframework.stereotype.Service;
 
 import java.util.Optional; // <--- ADD THIS IMPORT
+import java.util.UUID;
 
 @Service
-// Removed @AllArgsConstructor because we're explicitly defining a constructor
 public class UserService {
 
     private final UserRepository userRepository;
@@ -20,23 +20,39 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(User user) {
-        // <--- IMPORTANT CHANGE: ENCODE THE PASSWORD BEFORE SAVING
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public long getBalance(UUID userId) {
+        return userRepository.findById(userId)
+                .map(User::getBalance)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
-    // You can remove this method entirely, as Spring Security will handle login.
-    // If you keep it for other non-Spring-Security logic, ensure it doesn't interfere.
-    public User checkLogin(String email, String password) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            // If you *were* to manually verify passwords (not recommended with Spring Security)
-            // if (passwordEncoder.matches(password, user.getPassword())) {
-            //     return user;
-            // }
-        }
-        return null;
+    public void setBalance(UUID userId, long newBalance) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setBalance(newBalance);
+        userRepository.save(user);
     }
+
+
+    public void increaseBalance(UUID userId, long amount) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setBalance(user.getBalance() + amount);
+        userRepository.save(user);
+
+
+    public void decreaseBalance(UUID userId, long amount){
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            if (user.getBalance() < amount) {
+                throw new IllegalArgumentException("Insufficient balance");
+            }
+            user.setBalance(user.getBalance() - amount);
+            userRepository.save(user);
+        }
+        public User createUser(User user) {
+            // <--- IMPORTANT CHANGE: ENCODE THE PASSWORD BEFORE SAVING
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            return userRepository.save(user);
+        }
 }
