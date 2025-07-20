@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chỉnh sửa thông tin</title>
+</head>
+<body>
+<div class="content-wrapper">
+    <h1>Chỉnh sửa thông tin cá nhân</h1>
+    <div th:if="${user}">
+        <form method="post" th:action="@{/users/profile/{userId}/update(userId=${user.id})}" th:object="${user}" novalidate>
+            <div class="form-group">
+                <label for="fullName">Họ và Tên:</label>
+                <input type="text" id="fullName" th:field="*{fullName}" th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''">
+                <div th:if="${#fields.hasErrors('fullName')}" class="error-message" th:errors="*{fullName}"></div>
+            </div>
+            <div class="form-group">
+                <label>Email (không thể thay đổi):</label>
+                <input type="email" th:value="*{email}" disabled>
+            </div>
+            <button type="submit">Lưu thay đổi</button>
+            <a th:href="@{/users/profile/{id}(id=*{id})}" style="margin-left: 10px;">Hủy</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

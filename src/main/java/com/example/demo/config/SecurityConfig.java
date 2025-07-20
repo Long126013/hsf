@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider; // <--- ADD THIS IMPORT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // <--- ADD THIS IMPORT
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,7 +27,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         // <--- CHANGE: Allow access to /login and static resources
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/login", "/register","/css/**", "/js/**", "/images/**").permitAll()
                         // <--- CHANGE: All other requests require authentication
                         .anyRequest().authenticated()
                 )
@@ -42,7 +43,7 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout") // <--- ADD: Redirect after logout
                         .permitAll()
                 )
-                .csrf(csrf -> csrf.disable()); // <--- IMPORTANT: Temporarily disable CSRF for testing. REMOVE IN PRODUCTION!
+                .csrf(AbstractHttpConfigurer::disable); // <--- IMPORTANT: Temporarily disable CSRF for testing. REMOVE IN PRODUCTION!
 
         return http.build();
     }

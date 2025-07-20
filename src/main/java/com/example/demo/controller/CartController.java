@@ -19,13 +19,13 @@ import java.util.UUID;
 public class CartController {
     private final CartService cartService;
 
-    @GetMapping
-    public String viewCart(Model model) {
-        Cart cart = cartService.getCartByUserId();
-
-        model.addAttribute("cart", cart);
-        model.addAttribute("cartItems", cart.getItems());
-
-        return "cart";
-    }
+//    @GetMapping
+//    public String viewCart(Model model) {
+//        Cart cart = cartService.getCartByUserId();
+//
+//        model.addAttribute("cart", cart);
+//        model.addAttribute("cartItems", cart.getItems());
+//
+//        return "cart";
+//    }
 }

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="'Trang cá nhân của ' + ${user.fullName}"></title>
+</head>
+<body>
+<div class="content-wrapper">
+    <div th:if="${user}">
+        <div class="profile-header">
+            <img th:src="${user.avatarUrl != null ? user.avatarUrl : '/images/default-avatar.png'}" alt="Avatar"
+                 class="avatar"/>
+            <div class="profile-info">
+                <h1 th:text="${user.fullName}"></h1>
+                <p th:text="${user.email}"></p>
+                <p>Số dư: <span th:text="${user.balance}"></span> $</p>
+                <div th:if="${isOwnProfile}" class="mt-20">
+                    <a th:href="@{/users/profile/{userId}/edit(userId=${user.id})}" class="button">Chỉnh sửa thông
+                        tin</a>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div th:if="${isOwnProfile}">
+            <h3>Cập nhật Avatar</h3>
+            <form method="post" th:action="@{/users/profile/{userId}/upload-avatar(userId=${user.id})}"
+                  enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="avatar">Chọn ảnh mới (Tối đa 1MB, tối thiểu 50x50px):</label>
+                    <input type="file" id="avatar" name="avatar" accept="image/*" required>
+                </div>
+                <button type="submit">Tải lên</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

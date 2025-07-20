@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Đăng ký</title>
+</head>
+<body>
+<div class="content-wrapper">
+    <h1 class="text-center">Đăng ký tài khoản</h1>
+    <form th:action="@{/register}" th:object="${user}" method="post" enctype="multipart/form-data" novalidate>
+        <div class="form-group">
+            <label for="fullName">Họ và Tên:</label>
+            <input type="text" id="fullName" th:field="*{fullName}" th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''">
+            <div th:if="${#fields.hasErrors('fullName')}" class="error-message" th:errors="*{fullName}"></div>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''">
+            <div th:if="${#fields.hasErrors('email')}" class="error-message" th:errors="*{email}"></div>
+        </div>
+        <div class="form-group">
+            <label for="password">Mật khẩu:</label>
+            <input type="password" id="password" th:field="*{password}" th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''">
+            <div th:if="${#fields.hasErrors('password')}" class="error-message" th:errors="*{password}"></div>
+        </div>
+        <div class="form-group">
+            <label for="avatar">Avatar (không bắt buộc):</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*">
+        </div>
+        <button type="submit">Đăng ký</button>
+    </form>
+    <p class="mt-20 text-center">Đã có tài khoản? <a th:href="@{/login}">Đăng nhập</a></p>
+</div>
+</body>
+</html>
