@@ -39,20 +39,21 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         user.setBalance(user.getBalance() + amount);
         userRepository.save(user);
+    }
 
+    public void decreaseBalance(UUID userId, long amount) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (user.getBalance() < amount) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+        user.setBalance(user.getBalance() - amount);
+        userRepository.save(user);
+    }
 
-    public void decreaseBalance(UUID userId, long amount){
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
-            if (user.getBalance() < amount) {
-                throw new IllegalArgumentException("Insufficient balance");
-            }
-            user.setBalance(user.getBalance() - amount);
-            userRepository.save(user);
-        }
-        public User createUser(User user) {
-            // <--- IMPORTANT CHANGE: ENCODE THE PASSWORD BEFORE SAVING
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            return userRepository.save(user);
-        }
+    public User createUser(User user) {
+        // <--- IMPORTANT CHANGE: ENCODE THE PASSWORD BEFORE SAVING
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
 }
