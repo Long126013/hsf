@@ -1,16 +1,14 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.CartDTO;
-import com.example.demo.dto.CartItemDTO;
 import com.example.demo.model.Cart;
 import com.example.demo.model.CartItem;
+import com.example.demo.model.User;
 import com.example.demo.repository.CartItemRepository;
 import com.example.demo.repository.CartRepository;
-import com.example.demo.repository.ProductRepository;
+import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -19,26 +17,18 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
-    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
-    public CartDTO getCartByUserId(UUID userId) {
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
+    public Cart getCartByUserEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        List<CartItemDTO> items = cart.getItems().stream().map(item -> CartItemDTO.builder()
-                .productId(item.getProduct().getId())
-                .productName(item.getProduct().getName())
-                .price(item.getProduct().getPrice())
-                .quantity(item.getQuantity())
-                .totalPrice(item.getTotalPrice())
-                .build()
-        ).toList();
-
-        return CartDTO.builder()
-                .cartId(cart.getId())
-                .items(items)
-                .total(cart.getTotal())
-                .build();
+        return cartRepository.findByUser(user)
+                .orElseGet(() -> {
+                    Cart newCart = new Cart();
+                    newCart.setUser(user);
+                    return cartRepository.save(newCart);
+                });
     }
 
     public void removeItemFromCart(UUID cartItemId) {
@@ -50,5 +40,9 @@ public class CartService {
                 .orElseThrow(() -> new IllegalArgumentException("Cart item not found"));
         item.setQuantity(newQuantity);
         cartItemRepository.save(item);
+    }
+
+    public void saveCart(Cart cart) {
+        cartRepository.save(cart);
     }
 }

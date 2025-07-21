@@ -101,6 +101,7 @@
 <div class="total" id="total-price">Tổng cộng: 0₫</div>
 
 <button class="btn" onclick="checkout()">🧾 Thanh toán</button>
+<button class="btn" onclick="window.location.href='/topup'" style="background-color:#2196F3;margin-left:10px;">💰 Nạp tiền</button>
 
 <script>
     const cartItems = [
@@ -178,15 +179,9 @@
     }
 
     function checkout() {
-        const selectedItems = cartItems.filter(i => i.selected);
-        if (selectedItems.length === 0) {
-            alert("Vui lòng chọn ít nhất 1 sản phẩm để thanh toán.");
-            return;
-        }
-
-        console.log("Thanh toán với:", selectedItems);
-        alert(`Đã thanh toán ${selectedItems.length} sản phẩm!`);
-        // Gọi API POST /cart/checkout
+        fetch('/cart/checkout', {method: 'POST'})
+            .then(response => response.text())
+            .then(msg => alert(msg));
     }
 
     renderCart();
