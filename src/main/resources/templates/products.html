@@ -39,8 +39,8 @@
 <body>
 <h1>LIST OF PRODUCT PAGE</h1>
 
-<form th:action="@{/products}" method="get"> <label for="keyword" th:placeholder="Search by Product Name"></label>
-    <input type="text" id="keyword" name="keyword" th:value="${keyword}"/> <button type="submit">Search</button>
+<form th:action="@{/products}" method="get"> <label for="keyword" ></label>
+    <input type="text" id="keyword" name="keyword" th:value="${keyword}" placeholder="Search by Product Name"/> <button type="submit">Search</button>
     <button type="reset" onclick="window.location.href='/products'">Clear Search</button> </form>
 
 
