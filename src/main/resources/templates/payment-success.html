@@ -1,11 +1,63 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Payment Success</title>
+    <title>Thanh toán thành công</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            background: #f5f6fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .success-card {
+            max-width: 400px;
+            margin: 80px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 36px 28px 28px 28px;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 54px;
+            color: #4CAF50;
+            margin-bottom: 18px;
+        }
+        h2 {
+            color: #222;
+            margin-bottom: 12px;
+        }
+        .msg {
+            color: #444;
+            font-size: 17px;
+            margin-bottom: 24px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 22px;
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            text-decoration: none;
+            cursor: pointer;
+            margin: 0 6px;
+        }
+        .btn:hover {
+            background: #388e3c;
+        }
+    </style>
 </head>
 <body>
-<h2>Top Up Successful!</h2>
-<p>Your balance will be updated shortly if payment is confirmed by MoMo.</p>
-<a href="/topup">Back to Top Up</a>
+<div class="success-card">
+    <div class="success-icon">✔️</div>
+    <h2>Nạp tiền thành công!</h2>
+    <div class="msg">Số dư của bạn sẽ được cập nhật sau khi thanh toán được xác nhận.<br>
+        Cảm ơn bạn đã sử dụng dịch vụ.</div>
+    <a class="btn" href="/cart">Quay lại giỏ hàng</a>
+    <a class="btn" href="/topup" style="background:#2196F3;">Nạp thêm</a>
+</div>
 </body>
 </html> 
