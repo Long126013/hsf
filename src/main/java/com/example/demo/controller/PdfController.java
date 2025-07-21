@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.ByteArrayInputStream;
@@ -19,8 +20,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PdfController {
     private final ExportCartService exportCartService;
-    @GetMapping("/export-pdf")
-    public ResponseEntity<InputStreamResource> exportPdf(@RequestParam UUID cartId,
+    @GetMapping("/export-pdf/{id}")
+    public ResponseEntity<InputStreamResource> exportPdf(@PathVariable("id") UUID cartId,
                                                          @AuthenticationPrincipal UserDetails user) {
 
         ByteArrayInputStream bis = exportCartService.exportPatientRecordToPdf(cartId);
