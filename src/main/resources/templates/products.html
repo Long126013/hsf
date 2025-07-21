@@ -43,10 +43,10 @@
     <input type="text" id="keyword" name="keyword" th:value="${keyword}"/> <button type="submit">Search</button>
     <button type="reset" onclick="window.location.href='/products'">Clear Search</button> </form>
 
-<div th:if="${products.empty}"> <p>No products found.</p>
+<div th:if="${products.isEmpty()}"> <p>No products found.</p>
 </div>
 
-<div th:unless="${products.empty}"> <table>
+<div th:unless="${products.isEmpty()}"> <table>
     <thead>
     <tr>
         <th>ID</th>

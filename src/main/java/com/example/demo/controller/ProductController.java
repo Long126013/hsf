@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -18,7 +19,21 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/products")
-    public String productsPage() {
+    public String productsPage(
+            @RequestParam(value = "keyword", required = false) String keyword, // <--- ADD THIS PARAMETER
+            Model model // <--- ADD THIS PARAMETER
+    ) {
+        List<Product> products; // <--- ADD THIS VARIABLE DECLARATION
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            products = productService.findByName(keyword);
+        } else {
+            products = productService.findAll(); // Get all products
+        }
+
+        model.addAttribute("products", products); // <--- ADD THIS LINE
+        model.addAttribute("keyword", keyword);   // <--- ADD THIS LINE
+
         return "products"; // This maps to src/main/resources/templates/products.html
     }
 
