@@ -1,10 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Product List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 300px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
 <h1>LIST OF PRODUCT PAGE</h1>
+
+<form th:action="@{/products}" method="get"> <label for="keyword">Search by Product Name:</label>
+    <input type="text" id="keyword" name="keyword" th:value="${keyword}"/> <button type="submit">Search</button>
+    <button type="reset" onclick="window.location.href='/products'">Clear Search</button> </form>
+
+<div th:if="${products.empty}"> <p>No products found.</p>
+</div>
+
+<div th:unless="${products.empty}"> <table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Created Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${products}"> <td th:text="${product.id}"></td>
+        <td th:text="${product.name}"></td>
+        <td th:text="${product.quantity}"></td>
+        <td th:text="${product.price}"></td>
+        <td th:text="${#temporals.format(product.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+    </tr>
+    </tbody>
+</table>
+</div>
+
 </body>
 </html>
