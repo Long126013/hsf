@@ -1,17 +1,15 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.CartDTO;
 import com.example.demo.model.Cart;
 import com.example.demo.service.CartService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/cart")
@@ -20,8 +18,10 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public String viewCart(Model model) {
-        Cart cart = cartService.getCartByUserId();
+    public String viewCart(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        String email = userDetails.getUsername();
+
+        Cart cart = cartService.getCartByUserEmail(email);
 
         model.addAttribute("cart", cart);
         model.addAttribute("cartItems", cart.getItems());
