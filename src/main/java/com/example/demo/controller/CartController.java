@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 @Controller
 @RequestMapping("/cart")
@@ -28,18 +29,21 @@ public class CartController {
     }
 
     @PostMapping("/checkout")
-    public String checkout(@AuthenticationPrincipal UserDetails userDetails) {
+    public Object checkout(@AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
         Cart cart = cartService.getCartByUserEmail(email);
         long total = cart.getTotal();
         User user = cart.getUser();
+        if (total == 0) {
+            return ResponseEntity.badRequest().body("Cart is empty!");
+        }
         if (user.getBalance() < total) {
-            return "Insufficient balance!";
+            return ResponseEntity.badRequest().body("Insufficient balance!");
         }
         user.setBalance(user.getBalance() - total);
         cart.getItems().clear();
         cartService.saveCart(cart);
         userService.saveUser(user);
-        return "Checkout successful!";
+        return new org.springframework.web.servlet.view.RedirectView("/checkout-success");
     }
 }
