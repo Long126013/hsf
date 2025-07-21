@@ -45,6 +45,7 @@ public class BaseEntity {
     protected void onCreate() {
         if (createdDate == null) {
             createdDate = LocalDateTime.now();
+            
         }
     }
 
