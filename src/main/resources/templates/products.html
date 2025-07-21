@@ -54,6 +54,7 @@
         <th>Quantity</th>
         <th>Price</th>
         <th>Created Date</th>
+        <th>Action</th>
     </tr>
     </thead>
     <tbody>
@@ -62,6 +63,16 @@
         <td th:text="${product.quantity}"></td>
         <td th:text="${product.price}"></td>
         <td th:text="${#temporals.format(product.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td>
+            <form th:action="@{/products/edit}" method="get"> <input type="hidden" name="id" th:value="${product.id}" />
+                <button type="submit" class="update-button">Update</button>
+            </form>
+
+            <form th:action="@{/products/delete}" method="post" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                <input type="hidden" name="id" th:value="${product.id}" />
+                <button type="submit" class="delete-button">Delete</button>
+            </form>
+        </td>
     </tr>
     </tbody>
 </table>

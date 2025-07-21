@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageType == 'add' ? 'Add New Product' : 'Edit Product'}">Product Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: calc(100% - 20px); /* Adjust for padding */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .submit-button {
+            background-color: #4CAF50; /* Green for submit */
+        }
+        .submit-button:hover {
+            background-color: #45a049;
+        }
+        .cancel-button {
+            background-color: #f44336; /* Red for cancel */
+            margin-left: 10px;
+        }
+        .cancel-button:hover {
+            background-color: #da190b;
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="${pageType == 'add' ? 'Add New Product' : 'Edit Product'}">Product Form</h1>
+
+<!-- Form action changes based on pageType -->
+<form th:action="@{/products/save}" th:object="${product}" method="post">
+    <!-- Hidden ID field, only present for 'edit' operations -->
+    <input type="hidden" th:if="${pageType == 'edit'}" th:field="*{id}" />
+
+    <div class="form-group">
+        <label for="name">Product Name:</label>
+        <input type="text" id="name" th:field="*{name}" required />
+    </div>
+    <div class="form-group">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" th:field="*{quantity}" required min="0"/>
+    </div>
+    <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" id="price" th:field="*{price}" required min="0" step="0.01"/>
+    </div>
+
+    <!-- Include CSRF token if enabled in SecurityConfig -->
+    <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+
+    <button type="submit" class="submit-button">Submit</button>
+    <button type="button" class="cancel-button" onclick="window.location.href='/products'">Cancel</button>
+</form>
+
+</body>
+</html>

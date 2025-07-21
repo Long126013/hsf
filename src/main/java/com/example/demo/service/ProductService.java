@@ -25,4 +25,16 @@ public class ProductService {
     public List<Product> findAll(){
         return productRepository.findAll();
     }
+
+    public void deleteProductById(UUID id) {
+        productRepository.deleteById(id);
+    }
+
+    public Product getProductById(UUID id){
+        return productRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Product not found!"));
+    }
+
+    public void updateProduct(Product product) {
+        productRepository.save(product);
+    }
 }
