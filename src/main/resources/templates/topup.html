@@ -45,8 +45,21 @@
             cursor: pointer;
             margin-top: 8px;
         }
+        .btn-demo {
+            background-color: #2196F3;
+            margin-top: 8px;
+        }
         .btn:hover {
             background-color: #388e3c;
+        }
+        .btn-demo:hover {
+            background-color: #1769aa;
+        }
+        .info-msg {
+            margin-top: 18px;
+            color: #1976d2;
+            text-align: center;
+            font-size: 15px;
         }
     </style>
     <script>
@@ -59,20 +72,23 @@
                 .then(data => {
                     if (data.payUrl) {
                         window.open(data.payUrl, '_blank');
-                        setTimeout(function() {
-                            if (confirm('Did you scan the QR code and add the money in MoMo?')) {
-                                fetch('/demo/update-balance?userId=' + encodeURIComponent(userId) + '&amount=' + encodeURIComponent(amount), {method: 'POST'})
-                                    .then(() => alert('Thank you! Your balance has been updated for demo purposes.'))
-                                    .catch(() => alert('Failed to update balance.'));
-                            } else {
-                                alert('Please complete the payment in the MoMo window.');
-                            }
-                        }, 1000);
+                        document.getElementById('infoMsg').style.display = 'block';
                     } else {
                         alert('Failed to create MoMo payment');
                     }
                 })
                 .catch(() => alert('Error contacting server'));
+        }
+        function demoTopUp() {
+            const amount = document.getElementById('amount').value;
+            if (!amount || isNaN(amount) || amount < 1000) {
+                alert('Vui lòng nhập số tiền hợp lệ!');
+                return;
+            }
+            if (confirm('Bạn có chắc muốn nạp số tiền này vào tài khoản? (Demo, không cần quét QR)')) {
+                fetch('/demo/topup-balance?amount=' + encodeURIComponent(amount), {method: 'POST'})
+                    .then(() => window.location.href = '/payment-success');
+            }
         }
     </script>
 </head>
@@ -84,7 +100,12 @@
         <label for="amount">Số tiền (VND):</label>
         <input type="number" id="amount" name="amount" min="1000" required>
         <button class="btn" type="submit">Nạp tiền qua MoMo</button>
+        <button class="btn btn-demo" type="button" onclick="demoTopUp()">Nạp tiền (Demo, không cần quét QR)</button>
     </form>
+    <div id="infoMsg" class="info-msg" style="display:none;">
+        Vui lòng hoàn tất thanh toán trong cửa sổ MoMo. Sau khi thanh toán thành công, bạn sẽ được chuyển hướng về trang xác nhận.<br>
+        <span style="font-size:13px;color:#888;">(Nếu không thấy cửa sổ MoMo, hãy kiểm tra popup blocker của trình duyệt.)</span>
+    </div>
 </div>
 </body>
 </html> 
