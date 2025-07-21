@@ -41,4 +41,8 @@ public class CartService {
         item.setQuantity(newQuantity);
         cartItemRepository.save(item);
     }
+
+    public void saveCart(Cart cart) {
+        cartRepository.save(cart);
+    }
 }
