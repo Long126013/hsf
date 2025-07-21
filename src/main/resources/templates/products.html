@@ -3,6 +3,16 @@
     <meta charset="UTF-8">
     <title>Product List</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -10,40 +20,63 @@
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
             text-align: left;
         }
         th {
             background-color: #f2f2f2;
+            font-weight: bold;
         }
         form {
             margin-bottom: 20px;
+            display: flex; /* For inline elements */
+            align-items: center;
+            gap: 10px; /* Space between form elements */
         }
         input[type="text"] {
             padding: 8px;
             width: 300px;
-            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
-        button {
+        /* Styles for all buttons (search, clear, add, action buttons) */
+        button, .add-product-button {
             padding: 8px 15px;
-            background-color: #4CAF50;
-            color: white;
             border: none;
+            border-radius: 4px;
             cursor: pointer;
+            color: white;
+            transition: background-color 0.3s ease;
         }
-        button:hover {
+        button:hover, .add-product-button:hover {
             opacity: 0.8;
+        }
+
+        /* Specific button colors */
+        .search-button { background-color: #4CAF50; } /* Green */
+        .clear-button { background-color: #555; } /* Grey */
+        .add-product-button { background-color: #007bff; } /* Blue */
+        .delete-button { background-color: #f44336; } /* Red */
+        .update-button { background-color: #008CBA; } /* Light Blue */
+
+        /* Styles for action buttons in table rows */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
         }
     </style>
 </head>
 <body>
 <h1>LIST OF PRODUCT PAGE</h1>
 
-<form th:action="@{/products}" method="get"> <label for="keyword" ></label>
-    <input type="text" id="keyword" name="keyword" th:value="${keyword}" placeholder="Search by Product Name"/> <button type="submit">Search</button>
-    <button type="reset" onclick="window.location.href='/products'">Clear Search</button> </form>
+<form th:action="@{/products}" method="get">
+    <input type="text" id="keyword" name="keyword" th:value="${keyword}" placeholder="Search by Product Name"/>
+    <button type="submit" class="search-button">Search</button>
+    <button type="reset" class="clear-button" onclick="window.location.href='/products'">Clear Search</button> </form>
 
-
+<form th:action="@{/products/add}" method="get">
+    <button type="submit" class="add-product-button">Add New Product</button>
+</form>
 
 <div th:if="${products.isEmpty()}"> <p>No products found.</p>
 </div>
@@ -51,7 +84,7 @@
 <div th:unless="${products.isEmpty()}"> <table>
     <thead>
     <tr>
-        <th>ID</th>
+
         <th>Name</th>
         <th>Quantity</th>
         <th>Price</th>
@@ -60,7 +93,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="product : ${products}"> <td th:text="${product.id}"></td>
+    <tr th:each="product : ${products}">
         <td th:text="${product.name}"></td>
         <td th:text="${product.quantity}"></td>
         <td th:text="${product.price}"></td>
