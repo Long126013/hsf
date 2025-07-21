@@ -12,6 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
+import java.util.UUID;
+
 @Controller
 @RequestMapping("/cart")
 @RequiredArgsConstructor
@@ -26,6 +28,13 @@ public class CartController {
         model.addAttribute("cart", cart);
         model.addAttribute("cartItems", cart.getItems());
         return "cart";
+    }
+
+    @PostMapping("/add")
+    public String addToCart(@AuthenticationPrincipal UserDetails userDetails, @RequestParam UUID productId, @RequestParam(defaultValue = "1") int quantity) {
+        String email = userDetails.getUsername();
+        cartService.addToCart(productId, email, quantity);
+        return "redirect:/cart";
     }
 
     @PostMapping("/checkout")
