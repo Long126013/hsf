@@ -20,15 +20,24 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // <--- IMPORTANT CHANGE: Use actual email format for usernames and plain-text passwords
-        userService.createUser(new User("admin@example.com", "admin", 0));
-        userService.createUser(new User("test@example.com", "test", 0));
-        userService.createUser(new User("user@example.com", "user", 0));
-        userService.createUser(new User("ngoctrinh@example.com", "null", 0));
-        userService.createUser(new User("t","t", 0));
 
-        log.info("User initialization complete");
-
+        userInit();
         productInit();
+    }
+
+    public void userInit(){
+        try{
+            userService.createUser(new User("admin@example.com", "admin", 0));
+            userService.createUser(new User("test@example.com", "test", 0));
+            userService.createUser(new User("user@example.com", "user", 0));
+            userService.createUser(new User("ngoctrinh@example.com", "null", 0));
+            userService.createUser(new User("t","t", 0));
+
+            log.info("User initialization complete");
+        } catch(Exception ex){
+            ex.printStackTrace();
+            log.info("User initialization failed", ex.getMessage());
+        }
     }
 
     public void productInit(){
