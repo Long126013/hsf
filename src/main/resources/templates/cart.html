@@ -77,125 +77,127 @@
             -moz-appearance: textfield; /* Firefox */
         }
     </style>
+    <script>
+        function increaseQuantity(itemId) {
+            window.location.href = '/cart/increase/' + itemId;
+        }
+
+        function decreaseQuantity(itemId) {
+            window.location.href = '/cart/decrease/' + itemId;
+        }
+
+        function removeItem(itemId) {
+            if (confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?")) {
+                window.location.href = '/cart/remove/' + itemId;
+            }
+        }
+
+        function calculateTotal() {
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            let total = 0;
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    const price = parseFloat(cb.getAttribute('data-price'));
+                    const quantity = parseInt(cb.getAttribute('data-quantity'));
+                    total += price * quantity;
+                }
+            });
+
+            document.getElementById('total-price').innerText = total.toLocaleString('vi-VN') + ' VND';
+        }
+
+        // ✅ CHECKOUT FUNCTION (included as requested)
+        function checkout() {
+            const selectedCheckboxes = document.querySelectorAll('.item-checkbox:checked');
+            const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+            if (selectedIds.length === 0) {
+                alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+                return;
+            }
+
+            fetch('/cart/checkout', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(selectedIds)
+            })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else if (response.ok) {
+                        window.location.href = '/checkout-success';
+                    } else {
+                        return response.text().then(msg => alert(msg));
+                    }
+                });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            calculateTotal();
+        });
+    </script>
 </head>
 <body>
 
 <h2>🛒 Giỏ hàng của bạn</h2>
 
-<table id="cart-table">
-    <thead>
-    <tr>
-        <th></th>
-        <th>Sản phẩm</th>
-        <th>Giá</th>
-        <th>Số lượng</th>
-        <th>Tổng</th>
-        <th>Hành động</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- Render bằng JS -->
-    </tbody>
-</table>
+<form th:action="@{/cart/save}" method="post">
+    <!--<table id="cart-table">-->
+    <table>
+        <thead>
+        <tr>
+            <th>Chọn</th>
+            <th>Sản phẩm</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th>Tổng</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${cart.items}">
+            <td>
+                <input type="checkbox" class="item-checkbox"
+                       th:name="selectedItems"
+                       th:value="${item.id}"
+                       th:attr="data-price=${item.product.price}, data-quantity=${item.quantity}"
+                       onchange="calculateTotal()"/>
+            </td>
 
-<div class="total" id="total-price">Tổng cộng: 0₫</div>
+            <td th:text="${item.product.name}">Product Name</td>
 
-<button class="btn" onclick="checkout()">🧾 Thanh toán</button>
-<button class="btn" onclick="window.location.href='/topup'" style="background-color:#2196F3;margin-left:10px;">💰 Nạp tiền</button>
+            <td th:text="${#numbers.formatDecimal(item.product.price, 0, 'POINT', 0, 'POINT')} + ' VND'">100000 VND</td>
 
-<script>
-    const cartItems = [
-        { id: 1, name: 'Cà phê sữa đá', price: 25000, quantity: 2, selected: true },
-        { id: 2, name: 'Trà đào cam sả', price: 30000, quantity: 1, selected: true },
-        { id: 3, name: 'Bánh mì thịt nướng', price: 20000, quantity: 1, selected: true }
-    ];
+            <td>
+                <button type="button" class="btn" th:onclick="'decreaseQuantity(' + ${item.id} + ')'">-</button>
+                <span th:text="${item.quantity}">1</span>
+                <button type="button" class="btn" th:onclick="'increaseQuantity(' + ${item.id} + ')'">+</button>
+            </td>
 
-    function renderCart() {
-        const tbody = document.querySelector("#cart-table tbody");
-        tbody.innerHTML = "";
-        let total = 0;
+            <td th:text="${#numbers.formatDecimal(item.quantity * item.product.price, 0, 'POINT', 0, 'POINT')} + ' VND'">
+                0 VND
+            </td>
 
-        cartItems.forEach(item => {
-            const itemTotal = item.price * item.quantity;
-            if (item.selected) total += itemTotal;
+            <!-- ✅ Remove -->
+            <td>
+                <button type="button" class="btn" th:onclick="'removeItem(' + ${item.id} + ')'">Xóa</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-            const row = document.createElement("tr");
-            row.innerHTML = `
-          <td>
-            <input type="checkbox" ${item.selected ? 'checked' : ''} onchange="toggleSelect(${item.id})">
-          </td>
-          <td>${item.name}</td>
-          <td>${item.price.toLocaleString()}₫</td>
-          <td>
-            <div class="qty-control">
-              <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
-              <input type="number" class="qty-input" value="${item.quantity}" min="1"
-                onchange="updateQuantity(${item.id}, this.value)">
-              <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
-            </div>
-          </td>
-          <td>${itemTotal.toLocaleString()}₫</td>
-          <td>
-            <button class="btn btn-remove" onclick="removeItem(${item.id})">Xoá</button>
-          </td>
-        `;
-            tbody.appendChild(row);
-        });
 
-        document.getElementById("total-price").innerText = `Tổng cộng: ${total.toLocaleString()}₫`;
-    }
+    <h3 class="total">Tổng thanh toán: <div  id="total-price">Tổng cộng: 0 VND</div></h3>
 
-    function changeQty(id, delta) {
-        const item = cartItems.find(i => i.id === id);
-        if (item) {
-            item.quantity = Math.max(1, item.quantity + delta);
-            renderCart();
-        }
-    }
+    <button type="submit" class="btn">Lưu giỏ hàng</button>
 
-    function updateQuantity(id, newQty) {
-        const item = cartItems.find(i => i.id === id);
-        const qty = parseInt(newQty);
-        if (item && !isNaN(qty) && qty > 0) {
-            item.quantity = qty;
-            renderCart();
-        }
-    }
+    <button type="button" class="btn" onclick="checkout()">Thanh toán các mục đã chọn</button>
 
-    function toggleSelect(id) {
-        const item = cartItems.find(i => i.id === id);
-        if (item) {
-            item.selected = !item.selected;
-            renderCart();
-        }
-    }
-
-    function removeItem(id) {
-        const index = cartItems.findIndex(i => i.id === id);
-        if (index !== -1) {
-            cartItems.splice(index, 1);
-            renderCart();
-        }
-    }
-
-    function checkout() {
-        fetch('/cart/checkout', {method: 'POST'})
-            .then(response => {
-                if (response.redirected) {
-                    window.location.href = response.url;
-                } else if (response.ok) {
-                    window.location.href = '/checkout-success';
-                } else {
-                    return response.text().then(msg => alert(msg));
-                }
-            });
-    }
-
-    renderCart();
-</script>
-<a href="/cart/export-pdf" class="btn btn-primary" target="_blank">
-    Xuất hóa đơn PDF
-</a>
+</form>
+<!--<a href="/cart/export-pdf/${cart.id}'" class="btn btn-primary" target="_blank">-->
+<!--    Xuất hóa đơn-->
+<!--</a>-->
 
 </body>
 </html>
