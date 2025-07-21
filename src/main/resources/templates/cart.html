@@ -180,8 +180,15 @@
 
     function checkout() {
         fetch('/cart/checkout', {method: 'POST'})
-            .then(response => response.text())
-            .then(msg => alert(msg));
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    window.location.href = '/checkout-success';
+                } else {
+                    return response.text().then(msg => alert(msg));
+                }
+            });
     }
 
     renderCart();
