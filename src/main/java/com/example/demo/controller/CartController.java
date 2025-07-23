@@ -15,6 +15,11 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.UUID;
+import com.example.demo.model.Product;
+import com.example.demo.model.Receipt;
+import com.example.demo.model.ReceiptItem;
+import com.example.demo.service.ReceiptService;
+import java.util.List;
 
 @Controller
 @RequestMapping("/cart")
@@ -22,6 +27,7 @@ import java.util.UUID;
 public class CartController {
     private final CartService cartService;
     private final UserService userService;
+    private final ReceiptService receiptService;
 
     @GetMapping
     public String viewCart(@AuthenticationPrincipal UserDetails userDetails, Model model) {
@@ -51,11 +57,37 @@ public class CartController {
         if (user.getBalance() < total) {
             return ResponseEntity.badRequest().body("Insufficient balance!");
         }
+        // Trừ số lượng sản phẩm
+        for (var item : cart.getItems()) {
+            Product product = item.getProduct();
+            if (product.getQuantity() < item.getQuantity()) {
+                return ResponseEntity.badRequest().body("Sản phẩm '" + product.getName() + "' không đủ số lượng tồn kho!");
+            }
+            product.setQuantity(product.getQuantity() - item.getQuantity());
+        }
         user.setBalance(user.getBalance() - total);
+        // Tạo hóa đơn (Receipt)
+        Receipt receipt = new Receipt();
+        receipt.setUser(user);
+        receipt.setTotal(total);
+        List<ReceiptItem> receiptItems = new java.util.ArrayList<>();
+        for (var item : cart.getItems()) {
+            ReceiptItem ri = new ReceiptItem();
+            ri.setReceipt(receipt);
+            ri.setProductName(item.getProduct().getName());
+            ri.setPrice(item.getProduct().getPrice());
+            ri.setQuantity(item.getQuantity());
+            ri.setTotalPrice(item.getTotalPrice());
+            receiptItems.add(ri);
+        }
+        receipt.setItems(receiptItems);
+        receiptService.saveReceipt(receipt);
+        System.out.println("[DEBUG] Đã tạo hóa đơn với id=" + receipt.getId());
         cart.getItems().clear();
         cartService.saveCart(cart);
         userService.saveUser(user);
-        return new org.springframework.web.servlet.view.RedirectView("/checkout-success");
+        // Chuyển hướng sang trang hóa đơn
+        return new org.springframework.web.servlet.view.RedirectView("/receipt/" + receipt.getId());
     }
 
     @PostMapping("/update")

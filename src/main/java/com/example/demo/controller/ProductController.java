@@ -12,29 +12,45 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import com.example.demo.model.User;
+import com.example.demo.service.UserService;
 
 @Controller
 public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/products")
     public String productsPage(
-            @RequestParam(value = "keyword", required = false) String keyword, // <--- ADD THIS PARAMETER
-            Model model // <--- ADD THIS PARAMETER
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "minPrice", required = false) Long minPrice,
+            @RequestParam(value = "maxPrice", required = false) Long maxPrice,
+            @RequestParam(value = "minQty", required = false) Integer minQty,
+            @RequestParam(value = "maxQty", required = false) Integer maxQty,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            Model model
     ) {
-        List<Product> products; // <--- ADD THIS VARIABLE DECLARATION
-
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            products = productService.findByName(keyword);
-        } else {
-            products = productService.findAll(); // Get all products
-        }
-
-        model.addAttribute("products", products); // <--- ADD THIS LINE
-        model.addAttribute("keyword", keyword);   // <--- ADD THIS LINE
-
-        return "products"; // This maps to src/main/resources/templates/products.html
+        User user = userService.findByEmail(userDetails.getUsername());
+        model.addAttribute("user", user);
+        int size = 10;
+        List<Product> allFiltered = productService.filterProducts(keyword, minPrice, maxPrice, minQty, maxQty);
+        int totalPages = (int) Math.ceil((double) allFiltered.size() / size);
+        List<Product> products = productService.filterProductsPage(keyword, minPrice, maxPrice, minQty, maxQty, page, size);
+        model.addAttribute("products", products);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("minQty", minQty);
+        model.addAttribute("maxQty", maxQty);
+        model.addAttribute("page", page);
+        model.addAttribute("totalPages", totalPages);
+        return "products";
     }
 
     // --- Delete Product ---

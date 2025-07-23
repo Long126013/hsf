@@ -2,167 +2,289 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Product List</title>
+    <title>Danh sách sản phẩm</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
+            margin: 0;  
+            background: #ADEBB3;
         }
-
+        .container {
+            max-width: 1100px;
+            margin: 32px auto 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px #b0bec5;
+            padding: 32px 36px 36px 36px;
+        }
         h1 {
-            color: #333;
+            color: #388e3c;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
+            letter-spacing: 2px;
         }
-
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .cart-link {
+            font-size: 18px;
+            color: #388e3c;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        .cart-link:hover {
+            color: #1976d2;
+        }
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .search-form input[type="text"] {
+            padding: 9px 12px;
+            border: 1px solid #b0bec5;
+            border-radius: 6px;
+            font-size: 15px;
+            width: 260px;
+        }
+        .search-btn, .clear-btn, .add-product-btn, .update-button, .delete-button, .add-cart-btn {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .search-btn, .add-product-btn, .add-cart-btn {
+            background: #388e3c;
+            color: #fff;
+        }
+        .search-btn:hover, .add-product-btn:hover, .add-cart-btn:hover {
+            background: #1976d2;
+            color: #fff;
+        }
+        .clear-btn {
+            background: #b0bec5;
+            color: #333;
+        }
+        .clear-btn:hover {
+            background: #888;
+            color: #fff;
+        }
+        .update-button {
+            background: #fffde7;
+            color: #388e3c;
+            border: 1px solid #388e3c;
+        }
+        .update-button:hover {
+            background: #388e3c;
+            color: #fff;
+        }
+        .delete-button {
+            background: #fff3e0;
+            color: #d32f2f;
+            border: 1px solid #d32f2f;
+        }
+        .delete-button:hover {
+            background: #d32f2f;
+            color: #fff;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 18px;
+            background: #fafbfc;
         }
-
         th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
+            border: 1px solid #e0e0e0;
+            padding: 13px 10px;
+            text-align: center;
+            font-size: 15px;
         }
-
         th {
-            background-color: #f2f2f2;
-            font-weight: bold;
+            background: #ADEBB3;
+            color: #388e3c;
         }
-
-        form {
-            margin-bottom: 20px;
-            display: flex; /* For inline elements */
-            align-items: center;
-            gap: 10px; /* Space between form elements */
-        }
-
-        input[type="text"] {
-            padding: 8px;
-            width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        /* Styles for all buttons (search, clear, add, action buttons) */
-        button, .add-product-button {
-            padding: 8px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            color: white;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover, .add-product-button:hover {
-            opacity: 0.8;
-        }
-
-        .cart-link {
-            margin-bottom: 15px;
-            display: inline-block;
-        }
-
-        /* Specific button colors */
-        .search-button {
-            background-color: #4CAF50;
-        }
-
-        /* Green */
-        .clear-button {
-            background-color: #555;
-        }
-
-        /* Grey */
-        .add-product-button {
-            background-color: #007bff;
-        }
-
-        /* Blue */
-        .delete-button {
-            background-color: #f44336;
-        }
-
-        /* Red */
-        .update-button {
-            background-color: #008CBA;
-        }
-
-        /* Light Blue */
-
-        /* Styles for action buttons in table rows */
+        tr:nth-child(even) { background: #e8f5e9; }
         .action-buttons {
             display: flex;
-            gap: 5px;
+            gap: 6px;
+            justify-content: center;
+        }
+        .update-button {
+            background: #008CBA;
+            color: #fff;
+        }
+        .update-button:hover { background: #005f73; }
+        .delete-button {
+            background: #f44336;
+            color: #fff;
+        }
+        .delete-button:hover { background: #b71c1c; }
+        .add-cart-btn {
+            background: #388e3c;
+            color: #fff;
+        }
+        .add-cart-btn:hover { background: #1976d2; }
+        .no-products {
+            text-align: center;
+            color: #888;
+            font-size: 18px;
+            margin-top: 32px;
+        }
+        .logout-btn {
+            background: #d32f2f;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 9px 18px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .logout-btn:hover {
+            background: #b71c1c;
+        }
+        .history-link {
+            font-size: 18px;
+            color: #388e3c;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        .history-link:hover {
+            color: #1976d2;
+        }
+        .pagination .page-btn {
+            display: inline-block;
+            padding: 6px 13px;
+            margin: 0 2px;
+            background: #fff;
+            color: #388e3c;
+            border: 1px solid #388e3c;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .pagination .page-btn:hover {
+            background: #388e3c;
+            color: #fff;
+        }
+        .pagination .page-current {
+            background: #388e3c;
+            color: #fff;
+            border: 1px solid #388e3c;
+        }
+        @media (max-width: 800px) {
+            .container { padding: 12px; }
+            table, th, td { font-size: 13px; }
+            .search-form input[type="text"] { width: 120px; }
         }
     </style>
 </head>
 <body>
-<h1>LIST OF PRODUCT PAGE</h1>
-
-<a th:href="@{/cart}" class="cart-link">🛒 View Cart</a>
-
-<form th:action="@{/products}" method="get">
-    <input type="text" id="keyword" name="keyword" th:value="${keyword}" placeholder="Search by Product Name"/>
-    <button type="submit" class="search-button">Search</button>
-    <button type="reset" class="clear-button" onclick="window.location.href='/products'">Clear Search</button>
-</form>
-
-<form th:action="@{/products/add}" method="get">
-    <button type="submit" class="add-product-button">Add New Product</button>
-</form>
-
-<div th:if="${products.isEmpty()}">
-    <p>No products found.</p>
+<div class="container">
+    <h1>DANH SÁCH SẢN PHẨM</h1>
+    <div class="top-bar">
+        <a th:href="@{/cart}" class="cart-link">🛒 Xem giỏ hàng</a>
+        <div style="display: flex; gap: 14px; align-items: center;">
+            <span style="font-size:15px; color:#333; font-weight:bold;">Xin chào, <span th:text="${user.email}"></span>!</span>
+            <a th:href="@{/topup}" style="font-size:15px; color:#388e3c; font-weight:bold; text-decoration:underline; transition:color 0.2s;"
+               onmouseover="this.style.color='#1976d2'" onmouseout="this.style.color='#388e3c'">
+                Số dư: <span th:text="${#numbers.formatDecimal(user.balance, 0, 'COMMA', 0, 'POINT')}"></span> VND
+            </a>
+            <a th:href="@{/receipt/history}" class="history-link" style="font-size:15px; color:#388e3c; font-weight:bold; text-decoration:underline; transition:color 0.2s; margin-right: 8px;"
+               onmouseover="this.style.color='#1976d2'" onmouseout="this.style.color='#388e3c'">
+                Lịch sử hóa đơn
+            </a>
+            <form th:action="@{/products/add}" method="get" style="margin:0;">
+                <button type="submit" class="add-product-btn">+ Thêm sản phẩm</button>
+            </form>
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <button type="submit" class="logout-btn">Đăng xuất</button>
+            </form>
+        </div>
+    </div>
+    <form th:action="@{/products}" method="get" class="search-form" style="flex-wrap:wrap; align-items: flex-end;">
+        <input type="text" id="keyword" name="keyword" th:value="${keyword}" placeholder="Tìm theo tên sản phẩm..."/>
+        <div style="display:flex; flex-direction:column; align-items:center;">
+            <label for="minPrice" style="font-size:13px; color:#333;">Giá từ</label>
+            <input type="range" id="minPrice" name="minPrice" min="0" max="10000000" step="10000" th:value="${minPrice}" oninput="document.getElementById('minPriceVal').innerText=Number(this.value).toLocaleString('vi-VN') + ' VND'" style="width:110px;">
+            <span id="minPriceVal" th:text="${minPrice != null ? #numbers.formatDecimal(minPrice, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}">0 VND</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center;">
+            <label for="maxPrice" style="font-size:13px; color:#333;">Giá đến</label>
+            <input type="range" id="maxPrice" name="maxPrice" min="0" max="10000000" step="10000" th:value="${maxPrice}" oninput="document.getElementById('maxPriceVal').innerText=Number(this.value).toLocaleString('vi-VN') + ' VND'" style="width:110px;">
+            <span id="maxPriceVal" th:text="${maxPrice != null ? #numbers.formatDecimal(maxPrice, 0, 'COMMA', 0, 'POINT') + ' VND' : '10,000,000 VND'}">10,000,000 VND</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center;">
+            <label for="minQty" style="font-size:13px; color:#333;">SL từ</label>
+            <input type="range" id="minQty" name="minQty" min="0" max="1000" step="1" th:value="${minQty}" oninput="document.getElementById('minQtyVal').innerText=this.value" style="width:80px;">
+            <span id="minQtyVal" th:text="${minQty != null ? minQty : 0}">0</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center;">
+            <label for="maxQty" style="font-size:13px; color:#333;">SL đến</label>
+            <input type="range" id="maxQty" name="maxQty" min="0" max="1000" step="1" th:value="${maxQty}" oninput="document.getElementById('maxQtyVal').innerText=this.value" style="width:80px;">
+            <span id="maxQtyVal" th:text="${maxQty != null ? maxQty : 1000}">1000</span>
+        </div>
+        <button type="submit" class="search-btn">Lọc</button>
+        <button type="reset" class="clear-btn" onclick="window.location.href='/products'">Xóa lọc</button>
+    </form>
+    <div th:if="${products.isEmpty()}" class="no-products"><p>Không tìm thấy sản phẩm nào.</p></div>
+    <div th:unless="${products.isEmpty()}">
+        <table>
+            <thead>
+            <tr>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th>Ngày tạo</th>
+                <th colspan="3">Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.name}"></td>
+                <td th:text="${product.quantity}"></td>
+                <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
+                <td th:text="${#temporals.format(product.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td class="action-buttons">
+                    <form th:action="@{/products/edit}" method="get">
+                        <input type="hidden" name="id" th:value="${product.id}"/>
+                        <button type="submit" class="update-button">Sửa</button>
+                    </form>
+                    <form th:action="@{/products/delete}" method="post"
+                          onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">
+                        <input type="hidden" name="id" th:value="${product.id}"/>
+                        <button type="submit" class="delete-button">Xóa</button>
+                    </form>
+                </td>
+                <td>
+                    <form th:action="@{/cart/add}" method="post" style="display:inline-block">
+                        <input type="hidden" name="productId" th:value="${product.id}"/>
+                        <input type="number" name="quantity" value="1" min="1" max="100" style="width: 60px"/>
+                        <button type="submit" class="add-cart-btn">Thêm vào giỏ</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="pagination" style="display:flex; justify-content:center; align-items:center; gap:8px; margin-top:18px;">
+            <a th:if="${page > 1}" th:href="@{/products(page=${page-1}, keyword=${keyword}, minPrice=${minPrice}, maxPrice=${maxPrice}, minQty=${minQty}, maxQty=${maxQty})}" class="page-btn">&laquo; Trước</a>
+            <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+                <a th:if="${i != page}" th:href="@{/products(page=${i}, keyword=${keyword}, minPrice=${minPrice}, maxPrice=${maxPrice}, minQty=${minQty}, maxQty=${maxQty})}" class="page-btn" th:text="${i}"></a>
+                <span th:if="${i == page}" class="page-btn page-current" th:text="${i}"></span>
+            </span>
+            <a th:if="${page < totalPages}" th:href="@{/products(page=${page+1}, keyword=${keyword}, minPrice=${minPrice}, maxPrice=${maxPrice}, minQty=${minQty}, maxQty=${maxQty})}" class="page-btn">Sau &raquo;</a>
+        </div>
+    </div>
 </div>
-
-<div th:unless="${products.isEmpty()}">
-    <table>
-        <thead>
-        <tr>
-
-            <th>Name</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Created Date</th>
-            <th colspan="3">Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="product : ${products}">
-            <td th:text="${product.name}"></td>
-            <td th:text="${product.quantity}"></td>
-            <td th:text="${product.price}"></td>
-            <td th:text="${#temporals.format(product.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-            <td>
-                <form th:action="@{/products/edit}" method="get">
-                    <input type="hidden" name="id" th:value="${product.id}"/>
-                    <button type="submit" class="update-button">Update</button>
-                </form>
-            </td>
-            <td>
-                <form th:action="@{/products/delete}" method="post"
-                      onsubmit="return confirm('Are you sure you want to delete this product?');">
-                    <input type="hidden" name="id" th:value="${product.id}"/>
-                    <button type="submit" class="delete-button">Delete</button>
-                </form>
-            </td>
-            <td>
-                <form th:action="@{/cart/add}" method="post" style="display:inline-block">
-                    <input type="hidden" name="productId" th:value="${product.id}"/>
-                    <input type="number" name="quantity" value="1" min="1" max="100" style="width: 60px"/>
-                    <button type="submit">Add to Cart</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
 </body>
 </html>

@@ -41,14 +41,20 @@ public class CartService {
         Cart cart = getCartByUserEmail(email);
         Product product = productRepository.findById(productId).orElseThrow();
 
+        // Tính tổng số lượng sản phẩm này trong cart hiện tại
         Optional<CartItem> optionalCartItem = cart.getItems()
                 .stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst();
+        int currentQty = optionalCartItem.map(CartItem::getQuantity).orElse(0);
+        int availableQty = product.getQuantity();
+        if (currentQty + quantity > availableQty) {
+            throw new IllegalArgumentException("Số lượng vượt quá tồn kho hiện tại của sản phẩm!");
+        }
 
         if (optionalCartItem.isPresent()) {
             CartItem existingItem = optionalCartItem.get();
-            existingItem.setQuantity(existingItem.getQuantity() + 1);
+            existingItem.setQuantity(existingItem.getQuantity() + quantity);
         } else {
             CartItem newItem = new CartItem();
             newItem.setProduct(product);
@@ -65,8 +71,12 @@ public class CartService {
     }
 
     public void updateQuantity(UUID cartItemId, int newQuantity) {
-        CartItem item = cartItemRepository.findById(cartItemId).orElseThrow();
-        if (newQuantity < 1) newQuantity = 1;
+        CartItem item = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new IllegalArgumentException("Cart item not found"));
+        Product product = item.getProduct();
+        if (newQuantity > product.getQuantity()) {
+            throw new IllegalArgumentException("Số lượng cập nhật vượt quá tồn kho hiện tại của sản phẩm!");
+        }
         item.setQuantity(newQuantity);
         cartItemRepository.save(item);
     }
