@@ -112,7 +112,7 @@
 
 <a th:href="@{/products}" class="back-link">Quay lại mua sản phẩm</a>
 
-<form th:if="${cart.items.size() != 0}"  th:action="@{/cart/save}" method="post">
+<form th:if="${cart.items.size() != 0}" th:action="@{/cart/update}" method="post">
     <table>
         <thead>
         <tr>
@@ -139,11 +139,18 @@
             <td th:text="|${#numbers.formatDecimal(item.product.price, 0, 'POINT', 0, 'POINT')}  VND|">100000 VND</td>
 
             <td>
-                <button type="button" class="btn decrease-btn" th:attr="data-id=${item.id}">-</button>
-                <button type="button" class="btn increase-btn" th:attr="data-id=${item.id}">+</button>
+                <div class="quantity-controls" th:attr="data-item-id=${item.id}">
+
+                    <button type="button" class="qty-btn decrease">-</button>
+                    <input type="number" class="qty-input" min="1" th:max="${item.product.quantity}"
+                           th:value="${item.quantity}">
+                    <button type="button" class="qty-btn increase">+</button>
+                </div>
             </td>
 
-            <td th:text="|${#numbers.formatDecimal(item.quantity * item.product.price, 0, 'POINT', 0, 'POINT')} VND|">0 VND</td>
+            <td th:text="|${#numbers.formatDecimal(item.quantity * item.product.price, 0, 'POINT', 0, 'POINT')} VND|">0
+                VND
+            </td>
 
             <td>
                 <button type="button" class="btn btn-remove remove-btn" th:attr="data-id=${item.id}">Xóa</button>
@@ -152,7 +159,9 @@
         </tbody>
     </table>
 
-    <h3 class="total">Tổng thanh toán: <div id="total-price">Tổng cộng: 0 VND</div></h3>
+    <h3 class="total">Tổng thanh toán:
+        <div id="total-price">Tổng cộng: 0 VND</div>
+    </h3>
 
     <button type="submit" class="btn">Lưu giỏ hàng</button>
     <button type="button" class="btn" onclick="checkout()">Thanh toán các mục đã chọn</button>
@@ -204,24 +213,71 @@
 
         document.querySelectorAll('.remove-btn').forEach(btn => {
             btn.addEventListener('click', function () {
-                const itemId = this.getAttribute('data-id');
+                const itemId = this.dataset.id;
                 if (confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?")) {
-                    window.location.href = '/cart/remove/' + itemId;
+                    // window.location.href = '/cart/remove/' + itemId;
+                    fetch('/cart/remove/' + itemId, {
+                            method: 'DELETE'
+                        }
+                    )
+                        .then(() => window.location.reload());
+
                 }
             });
         });
 
-        document.querySelectorAll('.increase-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const itemId = this.getAttribute('data-id');
-                window.location.href = '/cart/increase/' + itemId;
-            });
-        });
+        document.querySelectorAll('.quantity-controls').forEach(control => {
+            const input = control.querySelector('.qty-input');
+            const decreaseBtn = control.querySelector('.decrease');
+            const increaseBtn = control.querySelector('.increase');
+            const itemId = control.dataset.itemId;
 
-        document.querySelectorAll('.decrease-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const itemId = this.getAttribute('data-id');
-                window.location.href = '/cart/decrease/' + itemId;
+            const minQuantity = 1;
+            const maxQuantity = parseInt(input.max)
+
+            const updateQuantity = (newVal) => {
+                // if (newVal >= 1) {
+                newVal = Math.max(minQuantity, Math.min(maxQuantity, newVal));
+                fetch('cart/update/' + itemId + '?newQuantity=' + newVal, {
+                        method: 'PUT'
+                    }
+                ).then(() => window.location.reload()); // force reload to see updated values
+                // }
+            };
+
+            decreaseBtn.addEventListener('click', () => {
+                let val = parseInt(input.value) || minQuantity;
+                if (val > minQuantity) {
+                    updateQuantity(val - 1);
+                }
+            });
+
+            increaseBtn.addEventListener('click', () => {
+                let val = parseInt(input.value) || minQuantity;
+                if (val < maxQuantity) {
+                    updateQuantity(val + 1);
+                } else {
+                    alert("Bạn đã chọn vượt quá số lượng sản phẩm hiện có trong kho. Số lượng tối đa có thể đặt là: " + maxQuantity);
+                }
+            });
+
+            input.addEventListener('change', () => {
+                let val = parseInt(input.value);
+                if (!isNaN(val)) {
+                    if (val > maxQuantity) {
+                        alert("Bạn đã chọn vượt quá số lượng sản phẩm hiện có trong kho. Số lượng tối đa có thể đặt là: " + maxQuantity);
+                        input.value = maxQuantity;
+                        updateQuantity(maxQuantity);
+                    } else if (val < minQuantity) {
+                        input.value = minQuantity;
+                        updateQuantity(minQuantity);
+                    } else {
+                        updateQuantity(val);
+                    }
+                } else {
+                    input.value = minQuantity;
+                    updateQuantity(minQuantity);
+                }
             });
         });
     });

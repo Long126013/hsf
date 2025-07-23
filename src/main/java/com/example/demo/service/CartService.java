@@ -65,8 +65,8 @@ public class CartService {
     }
 
     public void updateQuantity(UUID cartItemId, int newQuantity) {
-        CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new IllegalArgumentException("Cart item not found"));
+        CartItem item = cartItemRepository.findById(cartItemId).orElseThrow();
+        if (newQuantity < 1) newQuantity = 1;
         item.setQuantity(newQuantity);
         cartItemRepository.save(item);
     }

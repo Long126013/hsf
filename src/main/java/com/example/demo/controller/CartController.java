@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Cart;
+import com.example.demo.model.Product;
 import com.example.demo.model.User;
 import com.example.demo.service.CartService;
 import com.example.demo.service.UserService;
@@ -12,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -54,5 +56,24 @@ public class CartController {
         cartService.saveCart(cart);
         userService.saveUser(user);
         return new org.springframework.web.servlet.view.RedirectView("/checkout-success");
+    }
+
+    @PostMapping("/update")
+    public String saveCart(@ModelAttribute("cart") Cart cart) {
+        cartService.saveCart(cart);
+        return "redirect:/cart";
+    }
+
+    @PutMapping("/update/{itemId}")
+    public ResponseEntity<?> updateQuantity(@PathVariable UUID itemId, @RequestParam int newQuantity) {
+        cartService.updateQuantity(itemId, newQuantity);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/remove/{itemId}")
+    @ResponseBody
+    public ResponseEntity<?> removeItemFromCart(@PathVariable UUID itemId) {
+        cartService.removeItemFromCart(itemId);
+        return ResponseEntity.ok().build();
     }
 }

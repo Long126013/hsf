@@ -117,7 +117,8 @@
     <button type="submit" class="add-product-button">Add New Product</button>
 </form>
 
-<div th:if="${products.isEmpty()}"><p>No products found.</p>
+<div th:if="${products.isEmpty()}">
+    <p>No products found.</p>
 </div>
 
 <div th:unless="${products.isEmpty()}">
