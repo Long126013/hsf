@@ -36,6 +36,11 @@
             border-radius: 4px;
         }
 
+        .btn:hover {
+            background-color: #449a46;
+            color: #000;
+        }
+
         .btn-remove {
             background-color: #f44336;
         }
@@ -76,13 +81,38 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+
+        .back-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .back-link:hover {
+            background-color: #449a46;
+            color: #000;
+        }
     </style>
 </head>
 <body>
 
 <h2>🛒 Giỏ hàng của bạn</h2>
 
-<form th:action="@{/cart/save}" method="post">
+<p th:if="${cart.items.size() == 0}">
+    <span>Giỏ hàng của bạn đang trống.</span>
+</p>
+
+<a th:href="@{/products}" class="back-link">Quay lại mua sản phẩm</a>
+
+<form th:if="${cart.items.size() != 0}"  th:action="@{/cart/save}" method="post">
     <table>
         <thead>
         <tr>
