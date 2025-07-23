@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lịch sử hóa đơn</title>
+    <style>
+        body { background: #ADEBB3; font-family: Arial, sans-serif; margin: 0; }
+        .container { max-width: 800px; margin: 32px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #b0bec5; padding: 32px 36px; }
+        h2 { text-align: center; color: #388e3c; margin-bottom: 28px; letter-spacing: 2px; }
+        table { width: 100%; border-collapse: collapse; background: #fafbfc; }
+        th, td { border: 1px solid #e0e0e0; padding: 12px 8px; text-align: center; font-size: 15px; }
+        th { background: #ADEBB3; color: #388e3c; }
+        tr:nth-child(even) { background: #e8f5e9; }
+        .btn-view, .btn-pdf { padding: 6px 14px; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn-view { background: #388e3c; color: #fff; }
+        .btn-view:hover { background: #1976d2; }
+        .btn-pdf { background: #008CBA; color: #fff; }
+        .btn-pdf:hover { background: #005f73; }
+        .no-receipt { text-align: center; color: #888; font-size: 17px; margin-top: 32px; }
+        a { text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Lịch sử hóa đơn</h2>
+    <div th:if="${#lists.isEmpty(receipts)}" class="no-receipt">Bạn chưa có hóa đơn nào.</div>
+    <table th:if="${!#lists.isEmpty(receipts)}">
+        <thead>
+        <tr>
+            <th>Ngày tạo</th>
+            <th>Tổng tiền</th>
+            <th>Xem chi tiết</th>
+            <th>In PDF</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${receipts}">
+            <td th:text="${#temporals.format(r.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${#numbers.formatDecimal(r.total, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
+            <td><a th:href="@{'/receipt/' + ${r.id}}" class="btn-view">Xem</a></td>
+            <td><a th:href="@{'/receipt/' + ${r.id} + '/pdf'}" class="btn-pdf" target="_blank">PDF</a></td>
+        </tr>
+        </tbody>
+    </table>
+    <div style="text-align:center; margin-top:22px;"><a href="/products" style="color:#388e3c; font-weight:bold;">&larr; Quay lại sản phẩm</a></div>
+</div>
+</body>
+</html> 

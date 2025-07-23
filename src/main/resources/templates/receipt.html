@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hóa đơn</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background: #f8f9fa; }
+        .receipt-container { max-width: 700px; margin: 0 auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #ccc; padding: 32px 40px 40px 40px; }
+        h2 { text-align: center; color: #2196F3; margin-bottom: 24px; letter-spacing: 2px; }
+        .info { margin-bottom: 18px; font-size: 16px; }
+        .info b { color: #333; }
+        .btn { padding: 8px 18px; background: #4CAF50; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; text-decoration: none; display: inline-block; margin-bottom: 18px; }
+        .btn:hover { background: #388e3c; }
+        .print-btn { background: #2196F3; margin-bottom: 18px; margin-right: 10px; }
+        .print-btn:hover { background: #1565c0; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background: #fafbfc; }
+        th, td { padding: 12px; border: 1px solid #e0e0e0; text-align: center; font-size: 15px; }
+        th { background: #e3f2fd; color: #1976d2; }
+        tr:nth-child(even) { background: #f1f8e9; }
+        .total { font-weight: bold; font-size: 22px; text-align: right; color: #d32f2f; margin-top: 18px; }
+        .back-link { margin-top: 18px; }
+        .error { color: red; text-align: center; font-size: 18px; margin-bottom: 18px; }
+    </style>
+</head>
+<body>
+<div class="receipt-container">
+    <p th:if="${error}" th:text="${error}" class="error"></p>
+    <h2>🧾 HÓA ĐƠN THANH TOÁN</h2>
+    <div class="info">
+        <b>Email khách hàng:</b> <span th:text="${receipt.user.email}"></span><br>
+        <b>Ngày tạo:</b> <span th:text="${#temporals.format(receipt.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+    </div>
+    <a class="btn print-btn" th:href="'/receipt/' + ${receipt.id} + '/pdf'" target="_blank">In PDF</a>
+    <table>
+        <thead>
+        <tr>
+            <th>Tên sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Đơn giá</th>
+            <th>Tổng giá</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${receipt.items}">
+            <td th:text="${item.productName}"></td>
+            <td th:text="${item.quantity}"></td>
+            <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
+            <td th:text="${#numbers.formatDecimal(item.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="total">Tổng thanh toán: <span th:text="${#numbers.formatDecimal(receipt.total, 0, 'COMMA', 0, 'POINT')}"></span> VND</div>
+    <a href="/products" class="btn back-link">Quay lại mua hàng</a>
+</div>
+</body>
+</html> 
