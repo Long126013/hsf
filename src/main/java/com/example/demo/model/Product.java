@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "products")
 public class Product extends BaseEntity{
-    @Column(name = "name", unique = true, nullable = false, length = 255)
+    @Column(name = "name", unique = true, nullable = false, columnDefinition = "NVARCHAR(255)")
     private String name;
 
     @Column(name = "quantity", nullable = false)
