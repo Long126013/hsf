@@ -160,10 +160,10 @@
     </table>
 
     <h3 class="total">Tổng thanh toán:
-        <div id="total-price">Tổng cộng: 0 VND</div>
+        <span id="total-price">Tổng cộng: 0 VND</span>
     </h3>
 
-    <button type="submit" class="btn">Lưu giỏ hàng</button>
+    <!--    <button type="submit" class="btn">Lưu giỏ hàng</button>-->
     <button type="button" class="btn" onclick="checkout()">Thanh toán các mục đã chọn</button>
 </form>
 
@@ -209,7 +209,15 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        calculateTotal();
+        // Restore checked items
+        const checkedItems = JSON.parse(localStorage.getItem('checkedItems') || '[]');
+        document.querySelectorAll('.item-checkbox').forEach(cb => {
+            if (checkedItems.includes(cb.value)) {
+                cb.checked = true;
+            }
+        });
+        calculateTotal(); // recalculate after restore
+        localStorage.removeItem('checkedItems');
 
         document.querySelectorAll('.remove-btn').forEach(btn => {
             btn.addEventListener('click', function () {
@@ -235,14 +243,20 @@
             const minQuantity = 1;
             const maxQuantity = parseInt(input.max)
 
+            // Save checked items before reload
+            const saveCheckedItems = () => {
+                const checkedIds = Array.from(document.querySelectorAll('.item-checkbox:checked'))
+                    .map(cb => cb.value);
+                localStorage.setItem('checkedItems', JSON.stringify(checkedIds));
+            };
+
             const updateQuantity = (newVal) => {
-                // if (newVal >= 1) {
                 newVal = Math.max(minQuantity, Math.min(maxQuantity, newVal));
+                saveCheckedItems(); // Save before reload
                 fetch('cart/update/' + itemId + '?newQuantity=' + newVal, {
                         method: 'PUT'
                     }
                 ).then(() => window.location.reload()); // force reload to see updated values
-                // }
             };
 
             decreaseBtn.addEventListener('click', () => {
@@ -282,6 +296,5 @@
         });
     });
 </script>
-
 </body>
 </html>
