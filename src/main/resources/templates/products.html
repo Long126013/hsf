@@ -216,13 +216,13 @@
         <input type="text" id="keyword" name="keyword" th:value="${keyword}" placeholder="Tìm theo tên sản phẩm..."/>
         <div style="display:flex; flex-direction:column; align-items:center;">
             <label for="minPrice" style="font-size:13px; color:#333;">Giá từ</label>
-            <input type="range" id="minPrice" name="minPrice" min="0" max="10000000" step="10000" th:value="${minPrice}" oninput="document.getElementById('minPriceVal').innerText=Number(this.value).toLocaleString('vi-VN') + ' VND'" style="width:110px;">
+            <input type="number" id="minPrice" name="minPrice" min="0" max="10000" step="100" th:value="${minPrice}" style="width:110px;">
             <span id="minPriceVal" th:text="${minPrice != null ? #numbers.formatDecimal(minPrice, 0, 'COMMA', 0, 'POINT') + ' VND' : '0 VND'}">0 VND</span>
         </div>
         <div style="display:flex; flex-direction:column; align-items:center;">
             <label for="maxPrice" style="font-size:13px; color:#333;">Giá đến</label>
-            <input type="range" id="maxPrice" name="maxPrice" min="0" max="10000000" step="10000" th:value="${maxPrice}" oninput="document.getElementById('maxPriceVal').innerText=Number(this.value).toLocaleString('vi-VN') + ' VND'" style="width:110px;">
-            <span id="maxPriceVal" th:text="${maxPrice != null ? #numbers.formatDecimal(maxPrice, 0, 'COMMA', 0, 'POINT') + ' VND' : '10,000,000 VND'}">10,000,000 VND</span>
+            <input type="number" id="maxPrice" name="maxPrice" min="0" max="10000" step="100" th:value="${maxPrice}" style="width:110px;">
+            <span id="maxPriceVal" th:text="${maxPrice != null ? #numbers.formatDecimal(maxPrice, 0, 'COMMA', 0, 'POINT') + ' VND' : '10,000 VND'}">10,000 VND</span>
         </div>
         <div style="display:flex; flex-direction:column; align-items:center;">
             <label for="minQty" style="font-size:13px; color:#333;">SL từ</label>
